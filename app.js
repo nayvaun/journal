@@ -1,5 +1,3 @@
-// ===== Simple multi-journal system (custom modal, no prompt()) =====
-
 const STORAGE_KEY = "journals_v1";
 
 const homePanel = document.getElementById("homePanel");
@@ -18,75 +16,42 @@ const titleInput = document.getElementById("titleInput");
 const dateInput = document.getElementById("dateInput");
 const bodyInput = document.getElementById("bodyInput");
 const statusText = document.getElementById("statusText");
-const searchInput = document.getElementById("searchInput");
 
-// Modal elements
+// Modal
 const modalOverlay = document.getElementById("modalOverlay");
 const modalTitle = document.getElementById("modalTitle");
 const modalInput = document.getElementById("modalInput");
 const modalOk = document.getElementById("modalOk");
 const modalCancel = document.getElementById("modalCancel");
-const modalClose = document.getElementById("modalClose");
 
 let data = load();
 let activeJournal = null;
 let activeEntry = null;
 
-// ---------- MODAL ----------
-function askText({ title, placeholder = "Type here...", initial = "", okText = "OK" }) {
-  return new Promise((resolve) => {
+/* ===== Modal helper ===== */
+function askText(title, initial = "") {
+  return new Promise(resolve => {
     modalTitle.textContent = title;
-    modalInput.placeholder = placeholder;
     modalInput.value = initial;
-    modalOk.textContent = okText;
-
     modalOverlay.classList.remove("hidden");
-    modalOverlay.setAttribute("aria-hidden", "false");
+    modalInput.focus();
 
-    // Focus and select
-    setTimeout(() => {
-      modalInput.focus();
-      modalInput.select();
-    }, 0);
+    modalOk.onclick = () => close(modalInput.value);
+    modalCancel.onclick = () => close(null);
+    modalOverlay.onclick = e => e.target === modalOverlay && close(null);
 
-    const cleanup = () => {
+    function close(val) {
       modalOverlay.classList.add("hidden");
-      modalOverlay.setAttribute("aria-hidden", "true");
-
-      modalOk.onclick = null;
-      modalCancel.onclick = null;
-      modalClose.onclick = null;
-      modalOverlay.onclick = null;
-      window.removeEventListener("keydown", onKeyDown);
-    };
-
-    const finish = (value) => {
-      cleanup();
-      resolve(value);
-    };
-
-    const onKeyDown = (e) => {
-      if (e.key === "Escape") finish(null);
-      if (e.key === "Enter") finish(modalInput.value);
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-
-    modalOk.onclick = () => finish(modalInput.value);
-    modalCancel.onclick = () => finish(null);
-    modalClose.onclick = () => finish(null);
-
-    // Click outside closes
-    modalOverlay.onclick = (e) => {
-      if (e.target === modalOverlay) finish(null);
-    };
+      modalOk.onclick = modalCancel.onclick = null;
+      resolve(val);
+    }
   });
 }
 
-// ---------- INIT ----------
+/* ===== Init ===== */
 renderHome();
 
-// ---------- BUTTONS ----------
+/* ===== Buttons ===== */
 homeBtn.onclick = () => {
   activeJournal = null;
   activeEntry = null;
@@ -94,23 +59,9 @@ homeBtn.onclick = () => {
 };
 
 newJournalBtn.onclick = async () => {
-  const name = await askText({
-    title: "New journal",
-    placeholder: "Journal name…",
-    initial: "new journal",
-    okText: "Create"
-  });
-
-  if (name === null) return;
-  const trimmed = name.trim();
-  if (!trimmed) return;
-
-  data.journals.push({
-    id: id(),
-    title: trimmed,
-    entries: []
-  });
-
+  const name = await askText("New journal", "new journal");
+  if (!name) return;
+  data.journals.push({ id: id(), title: name, entries: [] });
   save();
   renderHome();
 };
@@ -118,19 +69,9 @@ newJournalBtn.onclick = async () => {
 renameJournalBtn.onclick = async () => {
   if (!activeJournal) return;
   const j = getJournal();
-
-  const name = await askText({
-    title: "Rename journal",
-    placeholder: "New name…",
-    initial: j.title,
-    okText: "Rename"
-  });
-
-  if (name === null) return;
-  const trimmed = name.trim();
-  if (!trimmed) return;
-
-  j.title = trimmed;
+  const name = await askText("Rename journal", j.title);
+  if (!name) return;
+  j.title = name;
   save();
   renderJournal();
 };
@@ -146,18 +87,16 @@ saveBtn.onclick = () => {
   const j = getJournal();
 
   if (!activeEntry) {
-    const entry = {
+    const e = {
       id: id(),
-      created: Date.now(),
       title: titleInput.value,
       date: dateInput.value,
       body: bodyInput.value
     };
-    j.entries.unshift(entry);
-    activeEntry = entry.id;
+    j.entries.unshift(e);
+    activeEntry = e.id;
   } else {
-    const e = j.entries.find(e => e.id === activeEntry);
-    if (!e) return;
+    const e = j.entries.find(x => x.id === activeEntry);
     e.title = titleInput.value;
     e.date = dateInput.value;
     e.body = bodyInput.value;
@@ -177,10 +116,10 @@ deleteEntryBtn.onclick = () => {
   renderJournal();
 };
 
-// ---------- RENDER ----------
+/* ===== Render ===== */
 function renderHome() {
-  homePanel.style.display = "block";
-  editorPanel.style.display = "none";
+  homePanel.classList.remove("hidden");
+  editorPanel.classList.add("hidden");
   headerTitle.textContent = "my journal";
   listEl.innerHTML = "";
 
@@ -199,14 +138,14 @@ function renderHome() {
 
 function renderJournal() {
   const j = getJournal();
-  homePanel.style.display = "none";
-  editorPanel.style.display = "block";
+  homePanel.classList.add("hidden");
+  editorPanel.classList.remove("hidden");
   headerTitle.textContent = j.title;
   listEl.innerHTML = "";
 
   j.entries.forEach(e => {
     const div = document.createElement("div");
-    div.className = "item" + (e.id === activeEntry ? " active" : "");
+    div.className = "item";
     div.textContent = e.title || "Untitled";
     div.onclick = () => {
       activeEntry = e.id;
@@ -215,7 +154,6 @@ function renderJournal() {
     listEl.appendChild(div);
   });
 
-  // Start on a new blank entry each time you open a journal
   newEntryBtn.click();
 }
 
@@ -226,7 +164,7 @@ function openEditor(e) {
   statusText.textContent = "Editing.";
 }
 
-// ---------- DATA ----------
+/* ===== Storage ===== */
 function getJournal() {
   return data.journals.find(j => j.id === activeJournal);
 }
