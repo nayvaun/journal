@@ -1,102 +1,76 @@
-const STORAGE_KEY = "journals_v1";
+const STORAGE_KEY = "journals_v2_no_popups";
 
 const homePanel = document.getElementById("homePanel");
 const editorPanel = document.getElementById("editorPanel");
 const listEl = document.getElementById("list");
-const headerTitle = document.getElementById("headerTitle");
 
 const homeBtn = document.getElementById("homeBtn");
 const newJournalBtn = document.getElementById("newJournalBtn");
 const newEntryBtn = document.getElementById("newEntryBtn");
 const saveBtn = document.getElementById("saveBtn");
 const deleteEntryBtn = document.getElementById("deleteEntryBtn");
-const renameJournalBtn = document.getElementById("renameJournalBtn");
 
+const journalTitleInput = document.getElementById("journalTitleInput");
 const titleInput = document.getElementById("titleInput");
 const dateInput = document.getElementById("dateInput");
 const bodyInput = document.getElementById("bodyInput");
 const statusText = document.getElementById("statusText");
-
-// Modal
-const modalOverlay = document.getElementById("modalOverlay");
-const modalTitle = document.getElementById("modalTitle");
-const modalInput = document.getElementById("modalInput");
-const modalOk = document.getElementById("modalOk");
-const modalCancel = document.getElementById("modalCancel");
+const searchInput = document.getElementById("searchInput");
 
 let data = load();
-let activeJournal = null;
-let activeEntry = null;
+let activeJournalId = null;
+let activeEntryId = null;
 
-/* ===== Modal helper ===== */
-function askText(title, initial = "") {
-  return new Promise(resolve => {
-    modalTitle.textContent = title;
-    modalInput.value = initial;
-    modalOverlay.classList.remove("hidden");
-    modalInput.focus();
-
-    modalOk.onclick = () => close(modalInput.value);
-    modalCancel.onclick = () => close(null);
-    modalOverlay.onclick = e => e.target === modalOverlay && close(null);
-
-    function close(val) {
-      modalOverlay.classList.add("hidden");
-      modalOk.onclick = modalCancel.onclick = null;
-      resolve(val);
-    }
-  });
-}
-
-/* ===== Init ===== */
+// Init
 renderHome();
 
 /* ===== Buttons ===== */
+
 homeBtn.onclick = () => {
-  activeJournal = null;
-  activeEntry = null;
+  activeJournalId = null;
+  activeEntryId = null;
   renderHome();
 };
 
-newJournalBtn.onclick = async () => {
-  const name = await askText("New journal", "new journal");
-  if (!name) return;
-  data.journals.push({ id: id(), title: name, entries: [] });
+newJournalBtn.onclick = () => {
+  const j = {
+    id: id(),
+    title: "Untitled journal",
+    entries: []
+  };
+  data.journals.unshift(j);
   save();
-  renderHome();
-};
-
-renameJournalBtn.onclick = async () => {
-  if (!activeJournal) return;
-  const j = getJournal();
-  const name = await askText("Rename journal", j.title);
-  if (!name) return;
-  j.title = name;
-  save();
-  renderJournal();
+  openJournal(j.id);
 };
 
 newEntryBtn.onclick = () => {
-  if (!activeJournal) return;
-  activeEntry = null;
+  if (!activeJournalId) return;
+  activeEntryId = null;
   openEditor({ title: "", date: "", body: "" });
+  statusText.textContent = "New entry (not saved yet).";
 };
 
 saveBtn.onclick = () => {
-  if (!activeJournal) return;
+  if (!activeJournalId) return;
   const j = getJournal();
+  if (!j) return;
 
-  if (!activeEntry) {
+  // Save journal title live
+  j.title = journalTitleInput.value.trim() || "Untitled journal";
+
+  if (!activeEntryId) {
     const e = {
       id: id(),
+      created: Date.now(),
       title: titleInput.value,
       date: dateInput.value,
       body: bodyInput.value
     };
-    j.entries.unshift(e);
-    activeEntry = e.id;
+    j.entries.unshift(e); // newest at top, oldest at bottom
+    activeEntryId = e.id;
   } else {
-    const e = j.entries.find(x => x.id === activeEntry);
+    const e = j.entries.find(x => x.id === activeEntryId);
+    if (!e) return;
     e.title = titleInput.value;
     e.date = dateInput.value;
     e.body = bodyInput.value;
@@ -108,65 +82,117 @@ saveBtn.onclick = () => {
 };
 
 deleteEntryBtn.onclick = () => {
-  if (!activeJournal || !activeEntry) return;
+  if (!activeJournalId || !activeEntryId) return;
   const j = getJournal();
-  j.entries = j.entries.filter(e => e.id !== activeEntry);
-  activeEntry = null;
+  j.entries = j.entries.filter(e => e.id !== activeEntryId);
+  activeEntryId = null;
   save();
   renderJournal();
+  statusText.textContent = "Deleted.";
 };
 
+/* ===== Live update journal title ===== */
+journalTitleInput.addEventListener("input", () => {
+  if (!activeJournalId) return;
+  const j = getJournal();
+  if (!j) return;
+  j.title = journalTitleInput.value.trim() || "Untitled journal";
+  save();
+  renderList(); // update sidebar label
+});
+
+/* ===== Search ===== */
+searchInput.addEventListener("input", () => {
+  renderList();
+});
+
 /* ===== Render ===== */
+
 function renderHome() {
   homePanel.classList.remove("hidden");
   editorPanel.classList.add("hidden");
-  headerTitle.textContent = "my journal";
   listEl.innerHTML = "";
+  renderList();
+}
 
-  data.journals.forEach(j => {
-    const div = document.createElement("div");
-    div.className = "item";
-    div.textContent = j.title;
-    div.onclick = () => {
-      activeJournal = j.id;
-      activeEntry = null;
-      renderJournal();
-    };
-    listEl.appendChild(div);
-  });
+function openJournal(journalId) {
+  activeJournalId = journalId;
+  activeEntryId = null;
+  renderJournal();
 }
 
 function renderJournal() {
   const j = getJournal();
+  if (!j) return;
+
   homePanel.classList.add("hidden");
   editorPanel.classList.remove("hidden");
-  headerTitle.textContent = j.title;
-  listEl.innerHTML = "";
 
-  j.entries.forEach(e => {
+  journalTitleInput.value = j.title || "Untitled journal";
+
+  // Sidebar list is now entries for this journal
+  renderList();
+
+  // You wanted: opening a journal starts on a blank page
+  newEntryBtn.click();
+}
+
+function renderList() {
+  listEl.innerHTML = "";
+  const q = (searchInput.value || "").toLowerCase().trim();
+
+  if (!activeJournalId) {
+    // Home: show journals
+    const journals = data.journals;
+    const filtered = q ? journals.filter(j => (j.title || "").toLowerCase().includes(q)) : journals;
+
+    filtered.forEach(j => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.textContent = j.title || "Untitled journal";
+      div.onclick = () => openJournal(j.id);
+      listEl.appendChild(div);
+    });
+
+    return;
+  }
+
+  // Inside journal: show entries (newest at top)
+  const j = getJournal();
+  const entries = j.entries;
+
+  const filtered = q
+    ? entries.filter(e =>
+        (e.title || "").toLowerCase().includes(q) ||
+        (e.date || "").toLowerCase().includes(q) ||
+        (e.body || "").toLowerCase().includes(q)
+      )
+    : entries;
+
+  filtered.forEach(e => {
     const div = document.createElement("div");
-    div.className = "item";
+    div.className = "item" + (e.id === activeEntryId ? " active" : "");
     div.textContent = e.title || "Untitled";
     div.onclick = () => {
-      activeEntry = e.id;
+      activeEntryId = e.id;
       openEditor(e);
+      statusText.textContent = "Editing.";
+      renderList();
     };
     listEl.appendChild(div);
   });
-
-  newEntryBtn.click();
 }
 
 function openEditor(e) {
   titleInput.value = e.title || "";
   dateInput.value = e.date || "";
   bodyInput.value = e.body || "";
-  statusText.textContent = "Editing.";
 }
 
 /* ===== Storage ===== */
+
 function getJournal() {
-  return data.journals.find(j => j.id === activeJournal);
+  return data.journals.find(j => j.id === activeJournalId);
 }
 
 function save() {
