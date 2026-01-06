@@ -11,7 +11,7 @@
 <header class="topbar">
   <div class="brand">
     <div class="dot"></div>
-    <h1 id="headerTitle">my journal</h1>
+    <h1>my journal</h1>
   </div>
 
   <div class="top-actions">
@@ -23,10 +23,6 @@
     <button id="newEntryBtn" class="btn">New entry</button>
     <button id="saveBtn" class="btn primary">Save</button>
     <button id="deleteEntryBtn" class="btn danger">Delete entry</button>
-
-    <div class="divider"></div>
-
-    <button id="renameJournalBtn" class="btn">Rename journal</button>
   </div>
 </header>
 
@@ -41,13 +37,16 @@
 
     <div id="homePanel">
       <h2>Home</h2>
-      <p>Select a journal or create a new one.</p>
+      <p>Select a journal on the left, or make a new one.</p>
     </div>
 
     <div id="editorPanel" class="hidden">
-      <input id="titleInput" class="title" placeholder="Title" />
+      <input id="journalTitleInput" class="journalTitle" placeholder="Journal name" />
+
+      <input id="titleInput" class="title" placeholder="Entry title" />
       <input id="dateInput" class="date" type="text" placeholder="Date (type anything)" />
       <textarea id="bodyInput" class="body" placeholder="Start writing..."></textarea>
+
       <div class="status">
         <span id="statusText">Ready.</span>
       </div>
@@ -56,18 +55,6 @@
   </section>
 
 </main>
-
-<!-- Custom modal -->
-<div id="modalOverlay" class="modalOverlay hidden" aria-hidden="true">
-  <div class="modal">
-    <h3 id="modalTitle">Title</h3>
-    <input id="modalInput" type="text" />
-    <div class="modalActions">
-      <button id="modalCancel" class="btn">Cancel</button>
-      <button id="modalOk" class="btn primary">OK</button>
-    </div>
-  </div>
-</div>
 
 <script src="./app.js"></script>
 </body>
