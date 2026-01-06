@@ -57,20 +57,23 @@
 
 </main>
 
-<!-- Custom popup (modal) -->
-<div id="modalOverlay" class="modalOverlay" style="display:none;">
-  <div class="modal">
-    <div class="modalTitle" id="modalTitle">Title</div>
-    <div class="modalBody">
-      <input id="modalInput" class="modalInput" type="text" />
-      <div class="modalActions">
-        <button id="modalCancel" class="btn">Cancel</button>
-        <button id="modalOk" class="btn primary">OK</button>
-      </div>
-      <div class="modalHint" id="modalHint"></div>
+<!-- Custom modal -->
+<div id="modalOverlay" class="modalOverlay hidden" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modalTop">
+      <h3 id="modalTitle" class="modalTitle">Title</h3>
+      <button id="modalClose" class="modalClose" aria-label="Close">✕</button>
+    </div>
+
+    <input id="modalInput" class="modalInput" type="text" placeholder="Type here..." />
+
+    <div class="modalActions">
+      <button id="modalCancel" class="btn">Cancel</button>
+      <button id="modalOk" class="btn primary">OK</button>
     </div>
   </div>
 </div>
+
 
   
 <script src="./app.js"></script>
