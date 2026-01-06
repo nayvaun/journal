@@ -44,7 +44,7 @@
       <p>Select a journal or create a new one.</p>
     </div>
 
-    <div id="editorPanel" style="display:none;">
+    <div id="editorPanel" class="hidden">
       <input id="titleInput" class="title" placeholder="Title" />
       <input id="dateInput" class="date" type="text" placeholder="Date (type anything)" />
       <textarea id="bodyInput" class="body" placeholder="Start writing..."></textarea>
@@ -59,14 +59,9 @@
 
 <!-- Custom modal -->
 <div id="modalOverlay" class="modalOverlay hidden" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modalTop">
-      <h3 id="modalTitle" class="modalTitle">Title</h3>
-      <button id="modalClose" class="modalClose" aria-label="Close">✕</button>
-    </div>
-
-    <input id="modalInput" class="modalInput" type="text" placeholder="Type here..." />
-
+  <div class="modal">
+    <h3 id="modalTitle">Title</h3>
+    <input id="modalInput" type="text" />
     <div class="modalActions">
       <button id="modalCancel" class="btn">Cancel</button>
       <button id="modalOk" class="btn primary">OK</button>
@@ -74,8 +69,6 @@
   </div>
 </div>
 
-
-  
 <script src="./app.js"></script>
 </body>
 </html>
