@@ -1,9 +1,56 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>my journal</title>
-  </head>
-  <body>
-    boioioioing
-  </body>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>my journal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="dot"></div>
+      <h1>my journal</h1>
+    </div>
+
+    <div class="top-actions">
+      <button id="newBtn" class="btn">New entry</button>
+      <button id="saveBtn" class="btn primary">Save</button>
+      <button id="deleteBtn" class="btn danger">Delete</button>
+      <div class="divider"></div>
+      <button id="exportBtn" class="btn">Export</button>
+      <label class="btn file">
+        Import
+        <input id="importInput" type="file" accept="application/json" />
+      </label>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <div class="search-wrap">
+        <input id="searchInput" class="search" placeholder="Search entries..." />
+      </div>
+      <div id="list" class="list"></div>
+      <p class="hint">
+        Saved on <b>this Mac + this browser</b> (local storage). Use Export for backups.
+      </p>
+    </aside>
+
+    <section class="editor">
+      <div class="fields">
+        <input id="titleInput" class="title" placeholder="Title" />
+        <input id="dateInput" class="date" type="date" />
+      </div>
+
+      <textarea id="bodyInput" class="body" placeholder="Start writing..."></textarea>
+
+      <div class="status">
+        <span id="statusText">Not saved yet.</span>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
 </html>
