@@ -10,14 +10,25 @@
   <header class="topbar">
     <div class="brand">
       <div class="dot"></div>
-      <h1>my journal</h1>
+      <h1 id="headerTitle">my journal</h1>
     </div>
 
     <div class="top-actions">
-      <button id="newBtn" class="btn">New entry</button>
-      <button id="saveBtn" class="btn primary">Save</button>
-      <button id="deleteBtn" class="btn danger">Delete</button>
+      <button id="homeBtn" class="btn">Home</button>
+      <button id="newJournalBtn" class="btn">New journal</button>
+
       <div class="divider"></div>
+
+      <button id="newEntryBtn" class="btn">New entry</button>
+      <button id="saveBtn" class="btn primary">Save</button>
+      <button id="deleteEntryBtn" class="btn danger">Delete entry</button>
+
+      <div class="divider"></div>
+
+      <button id="renameJournalBtn" class="btn">Rename journal</button>
+
+      <div class="divider"></div>
+
       <button id="exportBtn" class="btn">Export</button>
       <label class="btn file">
         Import
@@ -29,28 +40,14 @@
   <main class="layout">
     <aside class="sidebar">
       <div class="search-wrap">
-        <input id="searchInput" class="search" placeholder="Search entries..." />
+        <input id="searchInput" class="search" placeholder="Search..." />
       </div>
+
       <div id="list" class="list"></div>
+
       <p class="hint">
-        Saved on <b>this Mac + this browser</b> (local storage). Use Export for backups.
+        Saved on <b>this Mac + this browser</b>. Use Export for backups.
       </p>
     </aside>
 
-    <section class="editor">
-      <div class="fields">
-        <input id="titleInput" class="title" placeholder="Title" />
-        <input id="dateInput" class="date" type="date" />
-      </div>
-
-      <textarea id="bodyInput" class="body" placeholder="Start writing..."></textarea>
-
-      <div class="status">
-        <span id="statusText">Not saved yet.</span>
-      </div>
-    </section>
-  </main>
-
-  <script src="app.js"></script>
-</body>
-</html>
+    <sec
