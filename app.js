@@ -1,4 +1,4 @@
-// ===== Simple multi-journal system (NO fancy stuff yet) =====
+// ===== Simple multi-journal system (custom modal, no prompt()) =====
 
 const STORAGE_KEY = "journals_v1";
 
@@ -20,9 +20,68 @@ const bodyInput = document.getElementById("bodyInput");
 const statusText = document.getElementById("statusText");
 const searchInput = document.getElementById("searchInput");
 
+// Modal elements
+const modalOverlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalInput = document.getElementById("modalInput");
+const modalOk = document.getElementById("modalOk");
+const modalCancel = document.getElementById("modalCancel");
+const modalClose = document.getElementById("modalClose");
+
 let data = load();
 let activeJournal = null;
 let activeEntry = null;
+
+// ---------- MODAL ----------
+function askText({ title, placeholder = "Type here...", initial = "", okText = "OK" }) {
+  return new Promise((resolve) => {
+    modalTitle.textContent = title;
+    modalInput.placeholder = placeholder;
+    modalInput.value = initial;
+    modalOk.textContent = okText;
+
+    modalOverlay.classList.remove("hidden");
+    modalOverlay.setAttribute("aria-hidden", "false");
+
+    // Focus and select
+    setTimeout(() => {
+      modalInput.focus();
+      modalInput.select();
+    }, 0);
+
+    const cleanup = () => {
+      modalOverlay.classList.add("hidden");
+      modalOverlay.setAttribute("aria-hidden", "true");
+
+      modalOk.onclick = null;
+      modalCancel.onclick = null;
+      modalClose.onclick = null;
+      modalOverlay.onclick = null;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+
+    const finish = (value) => {
+      cleanup();
+      resolve(value);
+    };
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") finish(null);
+      if (e.key === "Enter") finish(modalInput.value);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
+    modalOk.onclick = () => finish(modalInput.value);
+    modalCancel.onclick = () => finish(null);
+    modalClose.onclick = () => finish(null);
+
+    // Click outside closes
+    modalOverlay.onclick = (e) => {
+      if (e.target === modalOverlay) finish(null);
+    };
+  });
+}
 
 // ---------- INIT ----------
 renderHome();
@@ -34,24 +93,44 @@ homeBtn.onclick = () => {
   renderHome();
 };
 
-newJournalBtn.onclick = () => {
-  const name = prompt("Journal name?");
-  if (!name) return;
+newJournalBtn.onclick = async () => {
+  const name = await askText({
+    title: "New journal",
+    placeholder: "Journal name…",
+    initial: "new journal",
+    okText: "Create"
+  });
+
+  if (name === null) return;
+  const trimmed = name.trim();
+  if (!trimmed) return;
+
   data.journals.push({
     id: id(),
-    title: name,
+    title: trimmed,
     entries: []
   });
+
   save();
   renderHome();
 };
 
-renameJournalBtn.onclick = () => {
+renameJournalBtn.onclick = async () => {
   if (!activeJournal) return;
   const j = getJournal();
-  const name = prompt("Rename journal:", j.title);
-  if (!name) return;
-  j.title = name;
+
+  const name = await askText({
+    title: "Rename journal",
+    placeholder: "New name…",
+    initial: j.title,
+    okText: "Rename"
+  });
+
+  if (name === null) return;
+  const trimmed = name.trim();
+  if (!trimmed) return;
+
+  j.title = trimmed;
   save();
   renderJournal();
 };
@@ -78,6 +157,7 @@ saveBtn.onclick = () => {
     activeEntry = entry.id;
   } else {
     const e = j.entries.find(e => e.id === activeEntry);
+    if (!e) return;
     e.title = titleInput.value;
     e.date = dateInput.value;
     e.body = bodyInput.value;
@@ -126,7 +206,7 @@ function renderJournal() {
 
   j.entries.forEach(e => {
     const div = document.createElement("div");
-    div.className = "item";
+    div.className = "item" + (e.id === activeEntry ? " active" : "");
     div.textContent = e.title || "Untitled";
     div.onclick = () => {
       activeEntry = e.id;
@@ -135,6 +215,7 @@ function renderJournal() {
     listEl.appendChild(div);
   });
 
+  // Start on a new blank entry each time you open a journal
   newEntryBtn.click();
 }
 
