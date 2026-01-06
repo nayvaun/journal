@@ -4,9 +4,7 @@ body {
   background: #f6f1eb;
 }
 
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
 /* ===== Top bar ===== */
 .topbar {
@@ -86,6 +84,14 @@ body {
   padding: 12px;
 }
 
+.journalTitle {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
 .title,
 .date {
   width: 100%;
@@ -102,37 +108,4 @@ body {
 .status {
   font-size: 12px;
   color: #555;
-}
-
-/* ===== Modal ===== */
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modalOverlay.hidden {
-  display: none;
-}
-
-.modal {
-  background: #fff;
-  padding: 16px;
-  border-radius: 12px;
-  width: 300px;
-}
-
-.modal input {
-  width: 100%;
-  padding: 8px;
-  margin: 10px 0;
-}
-
-.modalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
 }
