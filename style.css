@@ -80,6 +80,16 @@ body {
   background: #ddd;
 }
 
+.itemTitle {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.itemMeta {
+  font-size: 12px;
+  color: #555;
+}
+
 .editor {
   padding: 12px;
 }
