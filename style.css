@@ -97,3 +97,44 @@ body {
   font-size: 12px;
   color: #555;
 }
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal {
+  width: min(420px, 100%);
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.modalTitle {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.modalInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.modalHint {
+  margin-top: 10
+
