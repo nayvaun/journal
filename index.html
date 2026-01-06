@@ -4,74 +4,59 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>my journal</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="dot"></div>
-      <h1 id="headerTitle">my journal</h1>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="dot"></div>
+    <h1 id="headerTitle">my journal</h1>
+  </div>
+
+  <div class="top-actions">
+    <button id="homeBtn" class="btn">Home</button>
+    <button id="newJournalBtn" class="btn">New journal</button>
+
+    <div class="divider"></div>
+
+    <button id="newEntryBtn" class="btn">New entry</button>
+    <button id="saveBtn" class="btn primary">Save</button>
+    <button id="deleteEntryBtn" class="btn danger">Delete entry</button>
+
+    <div class="divider"></div>
+
+    <button id="renameJournalBtn" class="btn">Rename journal</button>
+  </div>
+</header>
+
+<main class="layout">
+
+  <aside class="sidebar">
+    <input id="searchInput" class="search" placeholder="Search..." />
+    <div id="list" class="list"></div>
+  </aside>
+
+  <section class="editor">
+
+    <div id="homePanel">
+      <h2>Home</h2>
+      <p>Select a journal or create a new one.</p>
     </div>
 
-    <div class="top-actions">
-      <button id="homeBtn" class="btn">Home</button>
-      <button id="newJournalBtn" class="btn">New journal</button>
-
-      <div class="divider"></div>
-
-      <button id="newEntryBtn" class="btn">New entry</button>
-      <button id="saveBtn" class="btn primary">Save</button>
-      <button id="deleteEntryBtn" class="btn danger">Delete entry</button>
-
-      <div class="divider"></div>
-
-      <button id="renameJournalBtn" class="btn">Rename journal</button>
-
-      <div class="divider"></div>
-
-      <button id="exportBtn" class="btn">Export</button>
-      <label class="btn file">
-        Import
-        <input id="importInput" type="file" accept="application/json" />
-      </label>
+    <div id="editorPanel" style="display:none;">
+      <input id="titleInput" class="title" placeholder="Title" />
+      <input id="dateInput" class="date" type="text" placeholder="Date (type anything)" />
+      <textarea id="bodyInput" class="body" placeholder="Start writing..."></textarea>
+      <div class="status">
+        <span id="statusText">Ready.</span>
+      </div>
     </div>
-  </header>
 
-  <main class="layout">
-    <aside class="sidebar">
-      <div class="search-wrap">
-        <input id="searchInput" class="search" placeholder="Search..." />
-      </div>
+  </section>
 
-      <div id="list" class="list"></div>
+</main>
 
-      <p class="hint">
-        Saved on <b>this Mac + this browser</b>. Use Export for backups.
-      </p>
-    </aside>
-
-    <section class="editor">
-      <div id="homePanel" class="panel">
-        <h2 class="panelTitle">Home</h2>
-        <p class="panelText">Pick a journal on the left, or make a new one.</p>
-        <p class="panelText small">Tip: Drag entries inside a journal to reorder them.</p>
-      </div>
-
-      <div id="editorPanel" class="panel hidden">
-        <div class="fields">
-          <input id="titleInput" class="title" placeholder="Title" />
-          <input id="dateInput" class="date" type="text" placeholder="Date (type anything)" />
-        </div>
-
-        <textarea id="bodyInput" class="body" placeholder="Start writing..."></textarea>
-
-        <div class="status">
-          <span id="statusText">Ready.</span>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <script src="app.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>
