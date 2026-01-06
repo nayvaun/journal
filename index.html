@@ -50,4 +50,28 @@
       </p>
     </aside>
 
-    <sec
+    <section class="editor">
+      <div id="homePanel" class="panel">
+        <h2 class="panelTitle">Home</h2>
+        <p class="panelText">Pick a journal on the left, or make a new one.</p>
+        <p class="panelText small">Tip: Drag entries inside a journal to reorder them.</p>
+      </div>
+
+      <div id="editorPanel" class="panel hidden">
+        <div class="fields">
+          <input id="titleInput" class="title" placeholder="Title" />
+          <input id="dateInput" class="date" type="text" placeholder="Date (type anything)" />
+        </div>
+
+        <textarea id="bodyInput" class="body" placeholder="Start writing..."></textarea>
+
+        <div class="status">
+          <span id="statusText">Ready.</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
