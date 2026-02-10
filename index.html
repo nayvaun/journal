@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Journal</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="hero">
+        <h1>📓 My Journal</h1>
+        <p>Capture your thoughts, track your mood, and revisit your moments.</p>
+      </header>
+
+      <section class="panel">
+        <form id="entry-form" class="entry-form">
+          <label>
+            Title
+            <input id="title" name="title" type="text" maxlength="80" placeholder="A short title" required />
+          </label>
+
+          <label>
+            Mood
+            <select id="mood" name="mood" required>
+              <option value="😀 Happy">😀 Happy</option>
+              <option value="😌 Calm">😌 Calm</option>
+              <option value="🤔 Reflective">🤔 Reflective</option>
+              <option value="😕 Stressed">😕 Stressed</option>
+              <option value="😢 Sad">😢 Sad</option>
+            </select>
+          </label>
+
+          <label>
+            Entry
+            <textarea
+              id="content"
+              name="content"
+              rows="6"
+              maxlength="2000"
+              placeholder="What's on your mind today?"
+              required
+            ></textarea>
+          </label>
+
+          <button type="submit">Save entry</button>
+        </form>
+      </section>
+
+      <section class="panel entries">
+        <div class="entries-toolbar">
+          <h2>Journal Entries</h2>
+          <input id="search" type="search" placeholder="Search by title or text..." aria-label="Search entries" />
+        </div>
+        <p id="empty-state" class="empty-state">No entries yet — write your first one above.</p>
+        <ul id="entries-list" class="entries-list"></ul>
+      </section>
+    </main>
+
+    <template id="entry-template">
+      <li class="entry-card">
+        <div class="entry-head">
+          <h3 class="entry-title"></h3>
+          <span class="entry-mood"></span>
+        </div>
+        <p class="entry-date"></p>
+        <p class="entry-content"></p>
+        <button class="delete-btn" type="button">Delete</button>
+      </li>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
